@@ -157,6 +157,10 @@
         }));
       }
 
+      function toggleToDo(id) {
+        store.dispatch(toggleToDoAction(id))
+      }
+
       function addGoal() {
         const input = document.getElementById('goal');
         const name = input.value;
@@ -173,8 +177,15 @@
 
       function addToDoToDom(todo) {
         const node = document.createElement('li');
+        const strike = document.createElement('s');
         const text = document.createTextNode(todo.name);
-        node.appendChild(text);
+        strike.appendChild(text);
+        node.appendChild(
+          todo.complete?
+            strike:
+            text
+        )
+        node.addEventListener('click', () => toggleToDo(todo.id));
         document.getElementById('todos').appendChild(node);
       }
 
