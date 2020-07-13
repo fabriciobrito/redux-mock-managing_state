@@ -4,6 +4,8 @@
     <title>
       Udacity Lesson 2 - ToDo's and Goals
     </title>
+    <!-- Import Redux -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
   </head>
   <body>
     <div>
@@ -21,35 +23,6 @@
       //Random ID Generator for testing purposes
       function generateId () {
         return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
-      }
-      //Library Code
-      function createStore(reducer){
-        let state; //The state itself
-        let listeners = []; //The list of listeners subscribed to be notified when state changes
-
-        //1. Get the state
-        const getState = () => state;
-
-        //2. Listen to state changes (return the unsubscribe function)
-        const subscribe = (listener) => {
-          listeners.push(listener)
-          return () => {
-            listeners = listeners.filter((l) => l !== listener)
-          }
-        }
-
-        //3. Update de state and call all subscribed functions
-        const dispatch = (action) => {
-          state = reducer(state, action)
-          listeners.forEach((listener) => listener())
-        }
-
-        // createStore will return the function handlers to deal with the app state
-        return {
-          getState,
-          subscribe,
-          dispatch
-        }
       }
 
       //App Code
@@ -124,15 +97,10 @@
         }
       }
 
-      //Create Root Reducer
-      function app(state = {}, action) {
-        return {
-          todos: todos(state.todos, action),
-          goals: goals(state.goals, action)
-        }
-      }
-
-      const store = createStore(app);
+      const store = Redux.createStore(Redux.combineReducers({
+        todos,
+        goals
+      }));
 
       store.subscribe(() => {
         const {todos, goals} = store.getState();
