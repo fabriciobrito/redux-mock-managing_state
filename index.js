@@ -58,10 +58,10 @@ function goals (state = [], action) {
 }
 
 //Usage Example
-let store = createStore(todos);
+const store = createStore(todos);
 
 store.subscribe(() => {
-  console.log('The new state is: ', store.getState())
+  console.log('The new ToDo\'s state is: ', store.getState())
 })
 
 store.dispatch({
@@ -71,4 +71,28 @@ store.dispatch({
     name: 'Learn Redux',
     complete: false
   }
+})
+
+const store2 = createStore(goals);
+
+store2.subscribe(() => {
+  console.log('The new GOAL state is: ', store2.getState())
+})
+
+store2.dispatch({
+  type: 'ADD_GOAL',
+  goal: {
+    id: 10,
+    name: 'Read 1 book per week'
+  }
+})
+
+store2.dispatch({
+  type: 'INVALIDE_TYPE',
+  id: 10
+})
+
+store2.dispatch({
+  type: 'REMOVE_GOAL',
+  id: 10
 })
