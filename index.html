@@ -157,10 +157,6 @@
         }));
       }
 
-      function toggleToDo(id) {
-        store.dispatch(toggleToDoAction(id))
-      }
-
       function addGoal() {
         const input = document.getElementById('goal');
         const name = input.value;
@@ -177,15 +173,12 @@
 
       function addToDoToDom(todo) {
         const node = document.createElement('li');
-        const strike = document.createElement('s');
         const text = document.createTextNode(todo.name);
-        strike.appendChild(text);
-        node.appendChild(
-          todo.complete?
-            strike:
-            text
-        )
-        node.addEventListener('click', () => toggleToDo(todo.id));
+        node.style.textDecoration = todo.complete? 'line-through' : 'none'
+        node.appendChild(text)
+        node.addEventListener('click', () => {
+          store.dispatch(toggleToDoAction(todo.id))
+        });
         document.getElementById('todos').appendChild(node);
       }
 
