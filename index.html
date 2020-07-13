@@ -124,7 +124,7 @@
         }
       }
 
-      //Usage Example
+      //Create Root Reducer
       function app(state = {}, action) {
         return {
           todos: todos(state.todos, action),
@@ -135,7 +135,13 @@
       const store = createStore(app);
 
       store.subscribe(() => {
-        console.log('The new state is: ', store.getState())
+        const {todos, goals} = store.getState();
+
+        document.getElementById('todos').innerHTML = '';
+        document.getElementById('goals').innerHTML = '';
+
+        todos.forEach(todo => addToDoToDom(todo));
+        goals.forEach(goal => addGoalToDom(goal));
       })
 
       //Hook UI inputs to the store
@@ -164,6 +170,20 @@
 
       document.getElementById('todoButton').addEventListener('click', addToDo);
       document.getElementById('goalButton').addEventListener('click', addGoal);
+
+      function addToDoToDom(todo) {
+        const node = document.createElement('li');
+        const text = document.createTextNode(todo.name);
+        node.appendChild(text);
+        document.getElementById('todos').appendChild(node);
+      }
+
+      function addGoalToDom(goal) {
+        const node = document.createElement('li');
+        const text = document.createTextNode(goal.name);
+        node.appendChild(text);
+        document.getElementById('goals').appendChild(node);
+      }
     </script>
   </body>
 </html>
