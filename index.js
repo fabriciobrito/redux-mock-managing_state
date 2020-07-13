@@ -58,41 +58,74 @@ function goals (state = [], action) {
 }
 
 //Usage Example
-const store = createStore(todos);
+function app(state = {}, action) {
+  return {
+    todos: todos(state.todos, action),
+    goals: goals(state.goals, action)
+  }
+}
+
+const store = createStore(app);
 
 store.subscribe(() => {
-  console.log('The new ToDo\'s state is: ', store.getState())
+  console.log('The new state is: ', store.getState())
+})
+
+//Tests
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 0,
+    name: 'Walk the dog',
+    complete: false,
+  }
 })
 
 store.dispatch({
   type: 'ADD_TODO',
   todo: {
-    id: 0,
-    name: 'Learn Redux',
-    complete: false
+    id: 1,
+    name: 'Wash the car',
+    complete: false,
   }
 })
 
-const store2 = createStore(goals);
-
-store2.subscribe(() => {
-  console.log('The new GOAL state is: ', store2.getState())
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 2,
+    name: 'Go to the gym',
+    complete: true,
+  }
 })
 
-store2.dispatch({
+store.dispatch({
+  type: 'REMOVE_TODO',
+  id: 1
+})
+
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 0
+})
+
+store.dispatch({
   type: 'ADD_GOAL',
   goal: {
-    id: 10,
-    name: 'Read 1 book per week'
+    id: 0,
+    name: 'Learn Redux'
   }
 })
 
-store2.dispatch({
-  type: 'INVALIDE_TYPE',
-  id: 10
+store.dispatch({
+  type: 'ADD_GOAL',
+  goal: {
+    id: 1,
+    name: 'Lose 20 pounds'
+  }
 })
 
-store2.dispatch({
+store.dispatch({
   type: 'REMOVE_GOAL',
-  id: 10
+  id: 0
 })
