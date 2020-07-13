@@ -1,5 +1,5 @@
 # redux-mock-managing_state
-Udacity Redux Lesson 1 exercise
+Udacity Redux Exercises
 
 The goal is to create a plain javascript to create a Store, containing:
 1. The state of the app itself
