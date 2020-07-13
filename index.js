@@ -8,30 +8,30 @@ function createStore(reducer){
 
   //2. Listen to state changes (return the unsubscribe function)
   const subscribe = (listener) => {
-    listener.push(listener);
-    return(() => {
-      listeners = listeners.filter((l) => l.id !== listener.id)
-    })
+    listeners.push(listener)
+    return () => {
+      listeners = listeners.filter((l) => l !== listener)
+    }
   }
 
   //3. Update de state and call all subscribed functions
   const dispatch = (action) => {
-    state = reducer(action);
-    listeners.forEach((listener) => listener());
+    state = reducer(state, action)
+    listeners.forEach((listener) => listener())
   }
 
   // createStore will return the function handlers to deal with the app state
-  return(
+  return {
     getState,
     subscribe,
     dispatch
-  )
+  }
 }
 
 //App Code
 //Reducer ToDo's (Pure Function)
-function todos (state = [], action){
-  switch (action.type){
+function todos (state = [], action) {
+  switch (action.type) {
     case 'ADD_TODO':
       return state.concat([action.todo]);
     case 'REMOVE_TODO':
@@ -45,16 +45,28 @@ function todos (state = [], action){
   }
 }
 
+//Reducer Goals (Pure Function)
+function goals (state = [], action) {
+  switch(action.type) {
+    case 'ADD_GOAL':
+      return state.concat([action.goal]);
+    case 'REMOVE_GOAL':
+      return state.filter(goal => goal.id !== action.id);
+    default:
+      return state;
+  }
+}
+
 //Usage Example
-const store = createStore(todos);
+let store = createStore(todos);
 
 store.subscribe(() => {
   console.log('The new state is: ', store.getState())
 })
 
-store.dispatch(store.getState(), {
+store.dispatch({
   type: 'ADD_TODO',
-  todo:{
+  todo: {
     id: 0,
     name: 'Learn Redux',
     complete: false
