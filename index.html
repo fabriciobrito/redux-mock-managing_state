@@ -171,11 +171,21 @@
       document.getElementById('todoButton').addEventListener('click', addToDo);
       document.getElementById('goalButton').addEventListener('click', addGoal);
 
+      function addRemoveButton(removeFunc){
+        const removeButton = document.createElement('button');
+        removeButton.innerHTML = 'X';
+        removeButton.addEventListener('click', removeFunc);
+        return removeButton;
+      }
+
       function addToDoToDom(todo) {
         const node = document.createElement('li');
         const text = document.createTextNode(todo.name);
         node.style.textDecoration = todo.complete? 'line-through' : 'none'
         node.appendChild(text)
+        node.appendChild(addRemoveButton(() => {
+          store.dispatch(removeToDoAction(todo.id));
+        }))
         node.addEventListener('click', () => {
           store.dispatch(toggleToDoAction(todo.id))
         });
@@ -186,6 +196,9 @@
         const node = document.createElement('li');
         const text = document.createTextNode(goal.name);
         node.appendChild(text);
+        node.appendChild(addRemoveButton(() => {
+          store.dispatch(removeGoalAction(goal.id));
+        }))
         document.getElementById('goals').appendChild(node);
       }
     </script>
