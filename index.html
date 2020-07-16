@@ -6,6 +6,10 @@
     </title>
     <!-- Import Redux -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
+    <!-- Import React, ReactDom and Babel (to handle JSX transpile)-->
+    <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
+    <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
+    <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
   </head>
   <body>
     <div>
@@ -19,6 +23,9 @@
       <button id="goalButton">Add Goal</button>
       <ul id="goals"></ul>
     </div>
+    <!-- Divide plain HTML from Reac Components here -->
+    <hr />
+    <div id="app"></div>
     <script type="text/javascript">
       //Random ID Generator for testing purposes
       function generateId () {
@@ -193,6 +200,53 @@
         }))
         document.getElementById('goals').appendChild(node);
       }
+    </script>
+    <script type="text/babel">
+      function List (props) {
+        return(
+          <ul>
+            <li>List</li>
+          </ul>
+        )
+      }
+
+      class ToDos extends React.Component {
+        render() {
+          return(
+            <div>
+              ToDos
+              <List />
+            </div>
+          )
+        }
+      }
+
+      class Goals extends React.Component {
+        render() {
+          return(
+            <div>
+              Goals
+              <List />
+            </div>
+          )
+        }
+      }
+
+      class App extends React.Component {
+        render() {
+          return(
+            <div>
+              <ToDos />
+              <Goals />
+            </div>
+          )
+        }
+      }
+
+      ReactDOM.render(
+        <App />,
+        document.getElementById('app')
+      )
     </script>
   </body>
 </html>
