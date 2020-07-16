@@ -225,7 +225,6 @@
         render() {
           return(
             <div>
-              To Do's
               <h1>To Do List</h1>
               <input
                 type="text"
@@ -241,10 +240,27 @@
       }
 
       class Goals extends React.Component {
+        addItem = (e) => {
+          e.preventDefault();
+          const name = this.input.value;
+          this.input.value = '';
+          this.props.store.dispatch(addGoalAction({
+            name,
+            id: generateId()
+          }))
+        };
+
         render() {
           return(
             <div>
-              Goals
+              <h1>Goals List</h1>
+              <input
+                type="text"
+                placeholder="Add Goal"
+                ref={(input) => this.input = input}
+                >
+              </input>
+              <button onClick={this.addItem}>Add Goal</button>
               <List />
             </div>
           )
@@ -256,7 +272,7 @@
           return(
             <div>
               <ToDos store={this.props.store}/>
-              <Goals />
+              <Goals store={this.props.store}/>
             </div>
           )
         }
