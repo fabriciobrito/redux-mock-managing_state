@@ -211,10 +211,29 @@
       }
 
       class ToDos extends React.Component {
+        addItem = (e) => {
+          e.preventDefault();
+          const name = this.input.value;
+          this.input.value = '';
+          this.props.store.dispatch(addToDoAction({
+            name,
+            complete: false,
+            id: generateId()
+          }))
+        };
+
         render() {
           return(
             <div>
-              ToDos
+              To Do's
+              <h1>To Do List</h1>
+              <input
+                type="text"
+                placeholder="Add To Do"
+                ref={(input) => this.input = input}
+                >
+              </input>
+              <button onClick={this.addItem}>Add To Do</button>
               <List />
             </div>
           )
@@ -236,7 +255,7 @@
         render() {
           return(
             <div>
-              <ToDos />
+              <ToDos store={this.props.store}/>
               <Goals />
             </div>
           )
@@ -244,7 +263,7 @@
       }
 
       ReactDOM.render(
-        <App />,
+        <App store={store} />,
         document.getElementById('app')
       )
     </script>
