@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>
-      Udacity Lesson 2 - ToDo's and Goals
+      Udacity Lessons - ToDo's and Goals
     </title>
     <!-- Import Redux -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
@@ -106,6 +106,15 @@
         }
       }
 
+      // Loading Reducer (Pure Function)
+      function loading (state = true, action) {
+        switch(action.type) {
+          case RECEIVE_DATA:
+            return false;
+          default:
+            return state;
+        }
+      }
       // What a nightmare this Redux Middleware structure can be, huh?
       // This is needed to allow middleware serialization with the next function
       const checker = (store) => (next) => (action) => {
@@ -132,7 +141,8 @@
 
       const store = Redux.createStore(Redux.combineReducers({
         todos,
-        goals
+        goals,
+        loading
       }), Redux.applyMiddleware(checker, logger));
     </script>
     <script type="text/babel">
@@ -234,11 +244,15 @@
         }
         render() {
           const { store } = this.props;
-          const { todos, goals } = store.getState();
+          const { todos, goals, loading } = store.getState();
+          if(loading === true)
+            return (
+              <h3>Loading...</h3>
+            );
           return(
             <div>
-              <ToDos todos={todos} store={this.props.store}/>
-              <Goals goals={goals} store={this.props.store}/>
+                <ToDos todos={todos} store={this.props.store}/>
+                <Goals goals={goals} store={this.props.store}/>
             </div>
           )
         }
