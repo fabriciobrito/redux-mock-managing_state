@@ -179,6 +179,11 @@
         };
         removeToDo = (todo) => {
           this.props.store.dispatch(removeToDoAction(todo.id));
+          return API.deleteTodo(todo.id)
+            .catch(() => {
+              this.props.store.dispatch(addToDoAction(todo));
+              alert('Sothing went wrong. Try again.')
+            })
         };
         toggleToDo = (id) => {
           this.props.store.dispatch(toggleToDoAction(id));
@@ -211,7 +216,13 @@
           }))
         };
         removeGoal = (goal) => {
-          this.props.store.dispatch(removeGoalAction(goal.id))
+          this.props.store.dispatch(removeGoalAction(goal.id));
+          return API.deleteGoal(goal.id)
+            .catch(() => {
+              this.props.store.dispatch(addGoalAction(goal));
+              alert('Sothing went wrong. Try again.');
+            }
+          )
         };
         render() {
           return(
