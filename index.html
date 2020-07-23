@@ -12,6 +12,8 @@
     <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
     <!-- Import fake Database API -->
     <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
+    <!-- Redux Thunk -->
+    <script src="https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js"></script>
   </head>
   <body>
     <div id="app"></div>
@@ -92,6 +94,19 @@
         }
       }
 
+      // Handle Remove ToDo
+      function handleRemoveToDo(todo) {
+        return (dispatch) => {
+          dispatch(removeToDoAction(todo.id))
+
+          return API.deleteTodo(todo.id)
+            .catch(() => {
+              this.props.store.dispatch(addToDoAction(todo));
+              alert('Sothing went wrong. Try again.')
+            })
+        }
+      }
+
       // Goals Reducer (Pure Function)
       function goals (state = [], action) {
         switch(action.type) {
@@ -143,7 +158,7 @@
         todos,
         goals,
         loading
-      }), Redux.applyMiddleware(checker, logger));
+      }), Redux.applyMiddleware(ReduxThunk.default, checker, logger));
     </script>
     <script type="text/babel">
       function List (props) {
@@ -177,12 +192,7 @@
             .catch(() => alert('Something went wrong. Please try again.'));
         };
         removeToDo = (todo) => {
-          this.props.store.dispatch(removeToDoAction(todo.id));
-          return API.deleteTodo(todo.id)
-            .catch(() => {
-              this.props.store.dispatch(addToDoAction(todo));
-              alert('Sothing went wrong. Try again.')
-            })
+          this.props.store.dispatch(handleRemoveToDo(todo));
         };
         toggleToDo = (id) => {
           this.props.store.dispatch(toggleToDoAction(id));
