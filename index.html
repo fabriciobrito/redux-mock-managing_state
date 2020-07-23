@@ -94,15 +94,42 @@
         }
       }
 
+      // Handle Add Todo
+      function handleAddToDo(name, callback) {
+        return (dispatch) => {
+          return API.saveTodo(name)
+            .then((todo) => {
+              dispatch(addToDoAction(todo));
+              callback();
+            })
+            .catch(() => alert('Something went wrong. Please try again.'));
+        }
+      }
+
       // Handle Remove ToDo
       function handleRemoveToDo(todo) {
         return (dispatch) => {
+          // Optimistic update locally
           dispatch(removeToDoAction(todo.id))
-
           return API.deleteTodo(todo.id)
+            // If something goes wrong, put it back on the list
             .catch(() => {
-              this.props.store.dispatch(addToDoAction(todo));
+              dispatch(addToDoAction(todo));
               alert('Sothing went wrong. Try again.')
+            })
+        }
+      }
+
+      // Handle Toggle ToDo Completeness
+      function handleToggleToDo(id) {
+        return (dispatch) => {
+          // Optimistic update locally
+          dispatch(toggleToDoAction(id));
+          return API.saveTodoToggle(id)
+            .catch(() => {
+              // If something goes wrong, revert the local complete status back to previous state
+              dispatch(toggleToDoAction(id));
+              alert('An error occurred. Please try again.');
             })
         }
       }
@@ -121,9 +148,11 @@
 
       function handleRemoveGoal(goal) {
         return (dispatch) => {
+          // Optimistic update
           dispatch(removeGoalAction(goal.id));
           return API.deleteGoal(goal.id)
             .catch(() => {
+              // If something goes wrong, put it back on the list
               this.props.store.dispatch(addGoalAction(goal));
               alert('Sothing went wrong. Try again.');
             }
@@ -208,23 +237,16 @@
       class ToDos extends React.Component {
         addItem = (e) => {
           e.preventDefault();
-          return API.saveTodo(this.input.value)
-            .then((todo) => {
-              this.props.store.dispatch(addToDoAction(todo));
-              this.input.value = '';
-            })
-            .catch(() => alert('Something went wrong. Please try again.'));
+          this.props.store.dispatch(handleAddToDo(
+            this.input.value,
+            () => this.input.value = ''
+          ));
         };
         removeToDo = (todo) => {
           this.props.store.dispatch(handleRemoveToDo(todo));
         };
         toggleToDo = (id) => {
-          this.props.store.dispatch(toggleToDoAction(id));
-          return API.saveTodoToggle(id)
-            .catch(() => {
-              this.props.store.dispatch(toggleToDoAction(id));
-              alert('An error occurred. Please try again.');
-            })
+          this.props.store.dispatch(handleToggleToDo(id));
         }
         render() {
           return(
