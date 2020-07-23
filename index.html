@@ -76,6 +76,28 @@
         }
       }
 
+      // Loading Reducer (Pure Function)
+      function loading (state = true, action) {
+        switch(action.type) {
+          case RECEIVE_DATA:
+            return false;
+          default:
+            return state;
+        }
+      }
+
+      // Handle Get Initial Data from the Database API and create the redux actions
+      function handleInitialData() {
+        return (dispatch) => {
+          return Promise.all([
+            API.fetchTodos(),
+            API.fetchGoals()
+          ]).then(([ todos, goals ]) => {
+            dispatch(receiveDataAction(todos, goals))
+          });
+        }
+      }
+
       // ToDo's Reducer (Pure Function)
       function todos (state = [], action) {
         switch (action.type) {
@@ -134,6 +156,20 @@
         }
       }
 
+      // Goals Reducer (Pure Function)
+      function goals (state = [], action) {
+        switch(action.type) {
+          case ADD_GOAL:
+            return state.concat([action.goal]);
+          case REMOVE_GOAL:
+            return state.filter(goal => goal.id !== action.id);
+          case RECEIVE_DATA:
+            return action.goals;
+          default:
+            return state;
+        }
+      }
+
       // Handle Add Goal
       function handleAddGoal(name, callback) {
         return (dispatch) => {
@@ -160,29 +196,6 @@
         }
       }
 
-      // Goals Reducer (Pure Function)
-      function goals (state = [], action) {
-        switch(action.type) {
-          case ADD_GOAL:
-            return state.concat([action.goal]);
-          case REMOVE_GOAL:
-            return state.filter(goal => goal.id !== action.id);
-          case RECEIVE_DATA:
-            return action.goals;
-          default:
-            return state;
-        }
-      }
-
-      // Loading Reducer (Pure Function)
-      function loading (state = true, action) {
-        switch(action.type) {
-          case RECEIVE_DATA:
-            return false;
-          default:
-            return state;
-        }
-      }
       // What a nightmare this Redux Middleware structure can be, huh?
       // This is needed to allow middleware serialization with the next function
       const checker = (store) => (next) => (action) => {
@@ -298,12 +311,7 @@
           const { store } = this.props;
           // Kind of an Anti-pattern here, but it would not make sense to artificially create a state to force the update
           store.subscribe(() => this.forceUpdate());
-          Promise.all([
-            API.fetchTodos(),
-            API.fetchGoals()
-          ]).then(([ todos, goals ]) => {
-            store.dispatch(receiveDataAction(todos, goals))
-          });
+          store.dispatch(handleInitialData());
         }
         render() {
           const { store } = this.props;
