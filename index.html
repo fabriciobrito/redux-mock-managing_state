@@ -247,19 +247,20 @@
         )
       }
 
+      // Presentational Component with the ToDos form and list
       class ToDos extends React.Component {
         addItem = (e) => {
           e.preventDefault();
-          this.props.store.dispatch(handleAddToDo(
+          this.props.dispatch(handleAddToDo(
             this.input.value,
             () => this.input.value = ''
           ));
         };
         removeToDo = (todo) => {
-          this.props.store.dispatch(handleRemoveToDo(todo));
+          this.props.dispatch(handleRemoveToDo(todo));
         };
         toggleToDo = (id) => {
-          this.props.store.dispatch(handleToggleToDo(id));
+          this.props.dispatch(handleToggleToDo(id));
         }
         render() {
           return(
@@ -278,16 +279,31 @@
         }
       }
 
+      // Connected Component to get the state and dispatch function to pass along to the Presentational Component
+      class ConnectedToDos extends React.Component {
+        render() {
+          return(
+            <Context.Consumer>
+              {(store) => {
+                const { todos } = store.getState();
+                return <ToDos todos={todos} dispatch={store.dispatch} />
+              }}
+            </Context.Consumer>
+          );
+        }
+      }
+
+      // Presentational Component with the Goals form and list
       class Goals extends React.Component {
         addItem = (e) => {
           e.preventDefault();
-          this.props.store.dispatch(handleAddGoal(
+          this.props.dispatch(handleAddGoal(
             this.input.value,
             () => this.input.value = '')
           );
         };
         removeGoal = (goal) => {
-          this.props.store.dispatch(handleRemoveGoal(goal))
+          this.props.dispatch(handleRemoveGoal(goal))
         };
         render() {
           return(
@@ -306,6 +322,21 @@
         }
       }
 
+      // Connected Component to get the goals state and dispatch function to pass along to the presentational component
+      class ConnectedGoals extends React.Component {
+        render() {
+          return(
+            <Context.Consumer>
+              {(store) => {
+                const { goals } = store.getState();
+                return <Goals goals={goals} dispatch={store.dispatch} />
+              }}
+            </Context.Consumer>
+          );
+        }
+      }
+
+      // Presentational Component with the main App
       class App extends React.Component {
         componentDidMount() {
           const { store } = this.props;
@@ -315,22 +346,51 @@
         }
         render() {
           const { store } = this.props;
-          const { todos, goals, loading } = store.getState();
+          const { loading } = store.getState();
           if(loading === true)
             return (
               <h3>Loading...</h3>
             );
           return(
             <div>
-                <ToDos todos={todos} store={this.props.store}/>
-                <Goals goals={goals} store={this.props.store}/>
+                <ConnectedToDos />
+                <ConnectedGoals />
             </div>
           )
         }
       }
 
+      // Connected Component to get the store and call the presentational component
+      class ConnectedApp extends React.Component {
+        render() {
+          return(
+            <Context.Consumer>
+              {(store) => (
+                <App store={store} />
+              )}
+            </Context.Consumer>
+          );
+        }
+      }
+
+      // Context Provide Class to make the store available to all Context.Consumers
+      class Provider extends React.Component {
+        render() {
+          return(
+            <Context.Provider value={this.props.store}>
+              {this.props.children}
+            </Context.Provider>
+          );
+        }
+      }
+
+      // Provides a way to provide a value to a component without having to pipe it down through all the layers
+      const Context = React.createContext();
+
       ReactDOM.render(
-        <App store={store} />,
+        <Provider store={store}>
+          <ConnectedApp />
+        </Provider>,
         document.getElementById('app')
       )
     </script>
