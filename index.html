@@ -280,18 +280,9 @@
       }
 
       // Connected Component to get the state and dispatch function to pass along to the Presentational Component
-      class ConnectedToDos extends React.Component {
-        render() {
-          return(
-            <Context.Consumer>
-              {(store) => {
-                const { todos } = store.getState();
-                return <ToDos todos={todos} dispatch={store.dispatch} />
-              }}
-            </Context.Consumer>
-          );
-        }
-      }
+      const ConnectedToDos = connect((state) => ({
+        todos: state.todos
+      }))(ToDos)
 
       // Presentational Component with the Goals form and list
       class Goals extends React.Component {
@@ -323,31 +314,18 @@
       }
 
       // Connected Component to get the goals state and dispatch function to pass along to the presentational component
-      class ConnectedGoals extends React.Component {
-        render() {
-          return(
-            <Context.Consumer>
-              {(store) => {
-                const { goals } = store.getState();
-                return <Goals goals={goals} dispatch={store.dispatch} />
-              }}
-            </Context.Consumer>
-          );
-        }
-      }
+      const ConnectedGoals = connect((state) => ({
+        goals: state.goals
+      }))(Goals)
 
       // Presentational Component with the main App
       class App extends React.Component {
         componentDidMount() {
-          const { store } = this.props;
-          // Kind of an Anti-pattern here, but it would not make sense to artificially create a state to force the update
-          store.subscribe(() => this.forceUpdate());
-          store.dispatch(handleInitialData());
-        }
+          const { dispatch } = this.props;
+          dispatch(handleInitialData());
+        };
         render() {
-          const { store } = this.props;
-          const { loading } = store.getState();
-          if(loading === true)
+          if(this.props.loading === true)
             return (
               <h3>Loading...</h3>
             );
@@ -361,15 +339,40 @@
       }
 
       // Connected Component to get the store and call the presentational component
-      class ConnectedApp extends React.Component {
-        render() {
-          return(
-            <Context.Consumer>
-              {(store) => (
-                <App store={store} />
-              )}
-            </Context.Consumer>
-          );
+      const ConnectedApp = connect((state) => ({
+        loading: state.loading
+      }))(App)
+
+      // Helper connect function to complete the ConnectedApp 'library'
+      function connect(mapStateToProps) {
+        return (Component) => {
+          class Receiver extends React.Component {
+            componentDidMount() {
+              const { subscribe } = this.props.store;
+              this.unsubscribe = subscribe(() => {this.forceUpdate()})
+            }
+            componentWillUnmount() {
+              this.unsubscribe();
+            }
+            render() {
+              const { dispatch, getState } = this.props.store
+              const state = getState();
+              const stateNeeded = mapStateToProps(state);
+              return <Component {...stateNeeded} dispatch={dispatch} />
+            }
+          }
+
+          class ConnectedComponent extends React.Component {
+            render() {
+              return(
+                <Context.Consumer>
+                  {store => <Receiver store={store} />}
+                </Context.Consumer>
+              )
+            }
+          }
+
+          return ConnectedComponent;
         }
       }
 
