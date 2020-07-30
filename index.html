@@ -14,6 +14,8 @@
     <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
     <!-- Redux Thunk -->
     <script src="https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js"></script>
+    <!-- React-Redux Binding Library -->
+    <script src='https://unpkg.com/react-redux@5.0.6/dist/react-redux.min.js'></script>
   </head>
   <body>
     <div id="app"></div>
@@ -280,7 +282,7 @@
       }
 
       // Connected Component to get the state and dispatch function to pass along to the Presentational Component
-      const ConnectedToDos = connect((state) => ({
+      const ConnectedToDos = ReactRedux.connect((state) => ({
         todos: state.todos
       }))(ToDos)
 
@@ -314,7 +316,7 @@
       }
 
       // Connected Component to get the goals state and dispatch function to pass along to the presentational component
-      const ConnectedGoals = connect((state) => ({
+      const ConnectedGoals = ReactRedux.connect((state) => ({
         goals: state.goals
       }))(Goals)
 
@@ -339,7 +341,7 @@
       }
 
       // Connected Component to get the store and call the presentational component
-      const ConnectedApp = connect((state) => ({
+      const ConnectedApp = ReactRedux.connect((state) => ({
         loading: state.loading
       }))(App)
 
@@ -376,24 +378,10 @@
         }
       }
 
-      // Context Provide Class to make the store available to all Context.Consumers
-      class Provider extends React.Component {
-        render() {
-          return(
-            <Context.Provider value={this.props.store}>
-              {this.props.children}
-            </Context.Provider>
-          );
-        }
-      }
-
-      // Provides a way to provide a value to a component without having to pipe it down through all the layers
-      const Context = React.createContext();
-
       ReactDOM.render(
-        <Provider store={store}>
+        <ReactRedux.Provider store={store}>
           <ConnectedApp />
-        </Provider>,
+        </ReactRedux.Provider>,
         document.getElementById('app')
       )
     </script>
