@@ -7,4 +7,6 @@ The goal is to create a plain javascript to create a Store, containing:
 3. Listen to state changes
 4. A way to update de state
 
-This is the first step to understand the goals of Redux
+The final state of this project can be found at:
+https://github.com/fabriciobrito/redux-mock-managing_state-rails-style
+where the files were splitted in a rails-style.
